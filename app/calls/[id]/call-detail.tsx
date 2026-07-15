@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import Link from "next/link";
 import {
   AlertTriangle,
   ArrowLeft,
@@ -189,7 +188,7 @@ export function CallDetail({ callId }: { callId: string }) {
               <Sparkles className="size-3" /> Adversarial corpus
             </Badge>
           ) : null}
-          <div className="ml-auto flex items-center gap-2">
+          <div className="w-full sm:w-auto sm:ml-auto flex flex-wrap items-center gap-2 mt-2 sm:mt-0">
             {isRep ? (
               <Badge
                 variant="outline"
@@ -321,48 +320,57 @@ export function CallDetail({ callId }: { callId: string }) {
           <Card className="gap-0 overflow-hidden py-0">
             {/* Audio player */}
             <div className="border-b bg-muted/30 p-4">
-              <div className="flex items-center gap-3">
-                <Button
-                  size="icon"
-                  className="size-9 rounded-full"
-                  onClick={() => setPlaying((p) => !p)}
-                  aria-label={playing ? "Pause" : "Play"}
-                >
-                  {playing ? <Pause className="size-4" /> : <Play className="size-4 pl-0.5" />}
-                </Button>
-                <Button variant="ghost" size="icon-sm" onClick={() => setTime((t) => Math.max(0, t - 15))} aria-label="Back 15 seconds">
-                  <SkipBack className="size-4" />
-                </Button>
-                <Button variant="ghost" size="icon-sm" onClick={() => setTime((t) => Math.min(call.durationSec, t + 15))} aria-label="Forward 15 seconds">
-                  <SkipForward className="size-4" />
-                </Button>
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                 {/* waveform */}
-                <div
-                  className="relative flex h-10 flex-1 cursor-pointer items-center gap-px"
-                  onClick={(e) => {
-                    const rect = e.currentTarget.getBoundingClientRect();
-                    const frac = (e.clientX - rect.left) / rect.width;
-                    setTime(Math.floor(frac * call.durationSec));
-                  }}
-                >
-                  {bars.map((b, i) => {
-                    const played = i / bars.length < time / call.durationSec;
-                    return (
-                      <span
-                        key={i}
-                        className={cn(
-                          "w-full flex-1 rounded-full",
-                          played ? "bg-primary" : "bg-border",
-                        )}
-                        style={{ height: `${b * 100}%` }}
-                      />
-                    );
-                  })}
+                <div className="flex items-center gap-3 w-full sm:flex-1">
+                  <div
+                    className="relative flex h-10 flex-1 cursor-pointer items-center gap-px"
+                    onClick={(e) => {
+                      const rect = e.currentTarget.getBoundingClientRect();
+                      const frac = (e.clientX - rect.left) / rect.width;
+                      setTime(Math.floor(frac * call.durationSec));
+                    }}
+                  >
+                    {bars.map((b, i) => {
+                      const played = i / bars.length < time / call.durationSec;
+                      return (
+                        <span
+                          key={i}
+                          className={cn(
+                            "w-full flex-1 rounded-full",
+                            played ? "bg-primary" : "bg-border",
+                          )}
+                          style={{ height: `${b * 100}%` }}
+                        />
+                      );
+                    })}
+                  </div>
                 </div>
-                <span className="w-24 text-right font-mono text-[12px] tabular-nums text-muted-foreground">
-                  {fmtTimestamp(time)} / {fmtDuration(call.durationSec)}
-                </span>
-                <Volume2 className="size-4 text-muted-foreground" />
+                {/* controls */}
+                <div className="flex items-center justify-between gap-3 w-full sm:w-auto sm:justify-start">
+                  <div className="flex items-center gap-1.5">
+                    <Button
+                      size="icon"
+                      className="size-9 rounded-full"
+                      onClick={() => setPlaying((p) => !p)}
+                      aria-label={playing ? "Pause" : "Play"}
+                    >
+                      {playing ? <Pause className="size-4" /> : <Play className="size-4 pl-0.5" />}
+                    </Button>
+                    <Button variant="ghost" size="icon-sm" onClick={() => setTime((t) => Math.max(0, t - 15))} aria-label="Back 15 seconds">
+                      <SkipBack className="size-4" />
+                    </Button>
+                    <Button variant="ghost" size="icon-sm" onClick={() => setTime((t) => Math.min(call.durationSec, t + 15))} aria-label="Forward 15 seconds">
+                      <SkipForward className="size-4" />
+                    </Button>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="w-24 text-right font-mono text-[12px] tabular-nums text-muted-foreground">
+                      {fmtTimestamp(time)} / {fmtDuration(call.durationSec)}
+                    </span>
+                    <Volume2 className="size-4 text-muted-foreground" />
+                  </div>
+                </div>
               </div>
             </div>
 

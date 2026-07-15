@@ -241,7 +241,7 @@ function CommandPalette({
 
 function ShellInner({ children }: { children: React.ReactNode }) {
   const { resolvedTheme, setTheme } = useTheme();
-  const { role, setRole } = useRole();
+  const { role, setRole, signedIn, signOut, ready } = useRole();
   const [mounted, setMounted] = React.useState(false);
   const [cmdOpen, setCmdOpen] = React.useState(false);
   const [sheetOpen, setSheetOpen] = React.useState(false);
@@ -250,6 +250,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
   // Marketing pages render without the app chrome
   const bare = pathname.startsWith("/landing");
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   React.useEffect(() => setMounted(true), []);
   React.useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -262,6 +263,12 @@ function ShellInner({ children }: { children: React.ReactNode }) {
     return () => document.removeEventListener("keydown", down);
   }, []);
 
+  React.useEffect(() => {
+    if (ready && !signedIn && !bare) {
+      router.replace("/landing");
+    }
+  }, [ready, signedIn, bare, router]);
+
   const persona =
     role === "admin"
       ? { name: ADMIN_PERSONA.name, sub: ADMIN_PERSONA.role, initials: ADMIN_PERSONA.initials }
@@ -272,6 +279,22 @@ function ShellInner({ children }: { children: React.ReactNode }) {
     setRole(r);
     router.push("/");
   };
+
+  if (!ready) {
+    if (bare) {
+      return (
+        <>
+          {children}
+          <Toaster position="bottom-right" />
+        </>
+      );
+    }
+    return null;
+  }
+
+  if (!signedIn && !bare) {
+    return null;
+  }
 
   if (bare) {
     return (
@@ -310,7 +333,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
           >
             <Search className="size-3.5" />
             <span>Search…</span>
-            <kbd className="ml-auto rounded border bg-muted px-1.5 py-px font-mono text-[10px]">
+            <kbd className="ml-auto rounded border bg-muted px-1.5 py-px font-mono text-[10px] hidden sm:inline-block">
               ⌘K
             </kbd>
           </button>
@@ -400,7 +423,12 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>Notification settings</DropdownMenuItem>
-                <DropdownMenuItem>Sign out</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => {
+                  signOut();
+                  router.replace("/landing");
+                }}>
+                  Sign out
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

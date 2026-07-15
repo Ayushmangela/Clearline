@@ -257,46 +257,48 @@ function AdminAnalytics() {
               <CardDescription>Compliance and coaching side by side — different problems, different owners</CardDescription>
             </CardHeader>
             <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow className="hover:bg-transparent">
-                    <TableHead>Representative</TableHead>
-                    <TableHead className="text-right">Calls</TableHead>
-                    <TableHead className="text-right">Compliance</TableHead>
-                    <TableHead className="text-right">High-risk</TableHead>
-                    <TableHead className="text-right">Findings / call</TableHead>
-                    <TableHead className="text-right">Talk ratio</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {LEADERBOARD.map((row) => (
-                    <TableRow key={row.rep.id}>
-                      <TableCell>
-                        <span className="flex items-center gap-2 text-[13px]">
-                          <RepAvatar rep={row.rep} size="sm" />
-                          {row.rep.name}
-                        </span>
-                      </TableCell>
-                      <TableCell className="text-right tabular-nums">{row.calls}</TableCell>
-                      <TableCell
-                        className={cn(
-                          "text-right font-medium tabular-nums",
-                          row.complianceRate >= 0.9
-                            ? "text-status-good-fg"
-                            : row.complianceRate < 0.8
-                              ? "text-status-critical-fg"
-                              : "",
-                        )}
-                      >
-                        {fmtPct(row.complianceRate)}
-                      </TableCell>
-                      <TableCell className="text-right tabular-nums">{row.highRisk}</TableCell>
-                      <TableCell className="text-right tabular-nums">{row.findingsPerCall}</TableCell>
-                      <TableCell className="text-right tabular-nums">{fmtPct(row.avgTalkRatio)}</TableCell>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="hover:bg-transparent">
+                      <TableHead>Representative</TableHead>
+                      <TableHead className="text-right">Calls</TableHead>
+                      <TableHead className="text-right">Compliance</TableHead>
+                      <TableHead className="text-right">High-risk</TableHead>
+                      <TableHead className="text-right">Findings / call</TableHead>
+                      <TableHead className="text-right">Talk ratio</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {LEADERBOARD.map((row) => (
+                      <TableRow key={row.rep.id}>
+                        <TableCell>
+                          <span className="flex items-center gap-2 text-[13px]">
+                            <RepAvatar rep={row.rep} size="sm" />
+                            {row.rep.name}
+                          </span>
+                        </TableCell>
+                        <TableCell className="text-right tabular-nums">{row.calls}</TableCell>
+                        <TableCell
+                          className={cn(
+                            "text-right font-medium tabular-nums",
+                            row.complianceRate >= 0.9
+                              ? "text-status-good-fg"
+                              : row.complianceRate < 0.8
+                                ? "text-status-critical-fg"
+                                : "",
+                          )}
+                        >
+                          {fmtPct(row.complianceRate)}
+                        </TableCell>
+                        <TableCell className="text-right tabular-nums">{row.highRisk}</TableCell>
+                        <TableCell className="text-right tabular-nums">{row.findingsPerCall}</TableCell>
+                        <TableCell className="text-right tabular-nums">{fmtPct(row.avgTalkRatio)}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
             </CardContent>
           </Card>
         </Reveal>

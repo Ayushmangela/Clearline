@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import Link from "next/link";
 import {
   ArrowRight,
   Check,
@@ -19,7 +18,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ButtonLink } from "@/components/button-link";
 import { Card, CardContent } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import {
   DropdownMenu,
@@ -42,7 +40,7 @@ import {
 import { Reveal } from "@/components/motion";
 import { CALLS, getCriterion, getRep, getReviewer } from "@/lib/mock-data";
 import { fmtDateTime, fmtRelative, fmtTimestamp } from "@/lib/format";
-import type { Call, RiskTier, ScoreLabel } from "@/lib/types";
+import type { RiskTier, ScoreLabel } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { AccessDenied, RoleGate } from "@/components/role-gate";
 
@@ -126,7 +124,7 @@ function AdminReview() {
 
       <div className="grid gap-4 lg:grid-cols-[340px_1fr]">
         {/* Queue */}
-        <Reveal>
+        <Reveal className="order-2 lg:order-1">
           <Card className="gap-0 overflow-hidden py-0">
             <div className="flex items-center justify-between border-b bg-muted/30 px-4 py-2.5">
               <p className="text-[12.5px] font-medium">
@@ -177,7 +175,7 @@ function AdminReview() {
         </Reveal>
 
         {/* Workspace */}
-        <Reveal delay={0.08} className="min-w-0 space-y-4">
+        <Reveal delay={0.08} className="min-w-0 space-y-4 order-1 lg:order-2">
           {/* Header card */}
           <Card className="gap-0 py-0">
             <CardContent className="p-4">

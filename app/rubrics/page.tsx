@@ -174,59 +174,61 @@ function AdminRubrics() {
             <TabsContent value="rules" className="mt-3 space-y-4">
               <Card className="gap-0 py-0">
                 <CardContent className="p-0">
-                  <Table>
-                    <TableHeader>
-                      <TableRow className="hover:bg-transparent">
-                        <TableHead className="w-16 pl-4">Code</TableHead>
-                        <TableHead>Criterion</TableHead>
-                        <TableHead className="w-32">Category</TableHead>
-                        <TableHead className="w-36">Severity</TableHead>
-                        <TableHead className="w-14" />
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {CRITERIA.map((c) => (
-                        <TableRow key={c.id}>
-                          <TableCell className="pl-4 font-mono text-[12px] font-medium">
-                            {c.code}
-                          </TableCell>
-                          <TableCell>
-                            <p className="text-[13px] font-medium">{c.name}</p>
-                            <p className="mt-0.5 max-w-xl text-[11.5px] leading-snug text-muted-foreground">
-                              {c.description}
-                            </p>
-                          </TableCell>
-                          <TableCell className="text-[12px] text-muted-foreground">
-                            {c.category}
-                          </TableCell>
-                          <TableCell>
-                            <Badge
-                              variant="outline"
-                              className={cn("h-5 text-[10px] font-medium capitalize", SEV_BADGE[c.severity])}
-                            >
-                              {c.severity}
-                            </Badge>
-                          </TableCell>
-                          <TableCell>
-                            <Button
-                              variant="ghost"
-                              size="icon-sm"
-                              className="text-muted-foreground"
-                              aria-label={`Edit ${c.code}`}
-                              onClick={() =>
-                                toast(`${c.code} is read-only in ${version.version}`, {
-                                  description:
-                                    "Published rubric versions are immutable. Edit the v2.5 draft instead.",
-                                })
-                              }
-                            >
-                              <Pencil className="size-3.5" />
-                            </Button>
-                          </TableCell>
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow className="hover:bg-transparent">
+                          <TableHead className="w-16 pl-4">Code</TableHead>
+                          <TableHead>Criterion</TableHead>
+                          <TableHead className="w-32">Category</TableHead>
+                          <TableHead className="w-36">Severity</TableHead>
+                          <TableHead className="w-14" />
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
+                      </TableHeader>
+                      <TableBody>
+                        {CRITERIA.map((c) => (
+                          <TableRow key={c.id}>
+                            <TableCell className="pl-4 font-mono text-[12px] font-medium">
+                              {c.code}
+                            </TableCell>
+                            <TableCell>
+                              <p className="text-[13px] font-medium">{c.name}</p>
+                              <p className="mt-0.5 max-w-xl text-[11.5px] leading-snug text-muted-foreground">
+                                {c.description}
+                              </p>
+                            </TableCell>
+                            <TableCell className="text-[12px] text-muted-foreground">
+                              {c.category}
+                            </TableCell>
+                            <TableCell>
+                              <Badge
+                                variant="outline"
+                                className={cn("h-5 text-[10px] font-medium capitalize", SEV_BADGE[c.severity])}
+                              >
+                                {c.severity}
+                              </Badge>
+                            </TableCell>
+                            <TableCell>
+                              <Button
+                                variant="ghost"
+                                size="icon-sm"
+                                className="text-muted-foreground"
+                                aria-label={`Edit ${c.code}`}
+                                onClick={() =>
+                                  toast(`${c.code} is read-only in ${version.version}`, {
+                                    description:
+                                      "Published rubric versions are immutable. Edit the v2.5 draft instead.",
+                                  })
+                                }
+                              >
+                                <Pencil className="size-3.5" />
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
                 </CardContent>
               </Card>
 

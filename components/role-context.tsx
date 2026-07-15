@@ -43,6 +43,7 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
   React.useEffect(() => {
     const stored = window.sessionStorage.getItem(AUTH_KEY);
     if (stored === "rep" || stored === "admin") {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setRoleState(stored);
       setSignedIn(true);
     }

@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import Link from "next/link";
 import {
   ArrowRight,
   ArrowUpDown,
@@ -76,6 +75,7 @@ export default function CallsPage() {
   // Simulated fetch for skeleton states + deep-link filter (?rep=)
   React.useEffect(() => {
     const repParam = new URLSearchParams(window.location.search).get("rep");
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (repParam) setRep(repParam);
     const t = setTimeout(() => setLoading(false), 550);
     return () => clearTimeout(t);

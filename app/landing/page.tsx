@@ -14,12 +14,14 @@ import {
   GaugeCircle,
   ListChecks,
   LogIn,
+  Menu,
   MessagesSquare,
   Mic,
   ShieldCheck,
   Sparkles,
   UserRound,
   UserRoundCog,
+  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -44,13 +46,13 @@ const TRACKS = [
     icon: ShieldCheck,
     kicker: "Compliance track",
     title: "Did a rule get broken?",
-    body: "Every call is scored against a versioned rubric — disclosures, prohibited language, suitability, conduct. Each criterion returns pass, flag, or fail with the exact transcript span, a rationale, and calibrated confidence.",
+    body: "Every call is scored against a versioned rubric — disclosures, prohibited language, suitability, conduct. Each criterion returns pass, flag, or fail with the exact transcript span, and a confidence that has been calibrated against reality.",
   },
   {
     icon: MessagesSquare,
     kicker: "Coaching track",
     title: "Why did the call go that way?",
-    body: "Talk ratio, interruptions, silences, and monologues computed straight from the audio — no model involved. Technique findings are pinned to timestamps and paired with what to do instead.",
+    body: "Talk ratio, interruptions, silences, and monologues computed straight from the audio — no model involved. Technique findings are pinned to timestamps and paired with what to do instead next call.",
   },
   {
     icon: BarChart3,
@@ -180,6 +182,9 @@ export default function LandingPage() {
   const [progress, setProgress] = React.useState(0);
   const [scrolled, setScrolled] = React.useState(false);
   const [loginOpen, setLoginOpen] = React.useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
+  const menuButtonRef = React.useRef<HTMLButtonElement>(null);
+  const mobilePanelRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
     const onScroll = () => {
@@ -194,11 +199,58 @@ export default function LandingPage() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  React.useEffect(() => {
+    if (!mobileMenuOpen) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const panel = mobilePanelRef.current;
+    const focusable = panel?.querySelectorAll<HTMLElement>(
+      'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
+    );
+    focusable?.[0]?.focus();
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setMobileMenuOpen(false);
+        return;
+      }
+      if (event.key !== "Tab" || !focusable || focusable.length === 0) return;
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      const active = document.activeElement;
+
+      if (event.shiftKey && active === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && active === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", onKeyDown);
+      menuButtonRef.current?.focus();
+    };
+  }, [mobileMenuOpen]);
+
   const atBottom = progress > 0.98;
   const C = 2 * Math.PI * 9; // progress ring circumference
 
+  const mobileLinks = [
+    ["Product", "#product"],
+    ["How it works", "#how"],
+    ["Trust", "#trust"],
+  ] as const;
+
   return (
-    <div className="min-h-dvh bg-background text-foreground">
+    <div className="min-h-dvh overflow-x-clip bg-background text-foreground">
       {/* ---------------- Navbar ---------------- */}
       <header className="pointer-events-none fixed inset-x-0 top-0 z-50 flex items-center px-4 py-4 md:px-6">
         {/* Brand — always centered. Start: "Clearline" pill. While scrolling: collapses
@@ -259,43 +311,94 @@ export default function LandingPage() {
 
         {/* Section links */}
         <nav className="pointer-events-auto hidden items-center gap-1 rounded-full border bg-card/80 px-2 py-1 shadow-xs backdrop-blur-md md:flex">
-          {[
-            ["Product", "#product"],
-            ["How it works", "#how"],
-            ["Trust", "#trust"],
-          ].map(([label, href]) => (
+          {mobileLinks.map(([label, href]) => (
             <a
               key={href}
               href={href}
-              className="rounded-full px-3 py-1.5 text-[13px] font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+              className="rounded-full px-3 py-1.5 text-[13px] font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
             >
               {label}
             </a>
           ))}
         </nav>
 
-        {/* Auth actions */}
-        <div className="pointer-events-auto ml-auto flex items-center gap-1 rounded-full border bg-card/80 p-1 shadow-xs backdrop-blur-md">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="rounded-full text-muted-foreground"
-            onClick={() => setLoginOpen(true)}
-          >
-            Sign in
-          </Button>
+        {/* Desktop auth action */}
+        <div className="pointer-events-auto ml-auto hidden items-center rounded-full border bg-card/80 p-1 shadow-xs backdrop-blur-md md:flex">
           <Button size="sm" className="rounded-full" onClick={() => setLoginOpen(true)}>
-            <LogIn className="size-3.5" /> Login
+            <LogIn className="size-3.5" /> Sign in
+          </Button>
+        </div>
+
+        {/* Mobile menu trigger */}
+        <div className="pointer-events-auto ml-auto md:hidden">
+          <Button
+            ref={menuButtonRef}
+            type="button"
+            variant="outline"
+            size="icon"
+            aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={mobileMenuOpen}
+            aria-controls="mobile-nav-panel"
+            onClick={() => setMobileMenuOpen((open) => !open)}
+            className="size-11 rounded-full border bg-card/80 shadow-xs backdrop-blur-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+          >
+            {mobileMenuOpen ? <X className="size-5" /> : <Menu className="size-5" />}
           </Button>
         </div>
       </header>
+
+      {/* Mobile menu */}
+      {mobileMenuOpen ? (
+        <div className="fixed inset-0 z-40 md:hidden" aria-hidden={false}>
+          <button
+            type="button"
+            aria-label="Close menu"
+            onClick={() => setMobileMenuOpen(false)}
+            className="absolute inset-0 bg-background/60 backdrop-blur-sm"
+          />
+          <div
+            id="mobile-nav-panel"
+            ref={mobilePanelRef}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Mobile navigation"
+            className="absolute right-4 top-20 w-[min(20rem,calc(100vw-2rem))] rounded-2xl border bg-card p-3 shadow-xl"
+          >
+            <nav className="grid gap-1">
+              {mobileLinks.map(([label, href]) => (
+                <a
+                  key={href}
+                  href={href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="rounded-xl px-3 py-2.5 text-[14px] font-medium text-foreground transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                >
+                  {label}
+                </a>
+              ))}
+            </nav>
+            <div className="mt-3 border-t pt-3">
+              <Button
+                className="w-full rounded-full"
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  setLoginOpen(true);
+                }}
+              >
+                <LogIn className="size-4" /> Sign in
+              </Button>
+            </div>
+          </div>
+        </div>
+      ) : null}
 
       {/* ---------------- Hero ---------------- */}
       <section className="relative overflow-hidden px-4 pb-20 pt-36 md:px-6 md:pt-44">
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_50%_at_50%_0%,--alpha(var(--color-primary)/8%),transparent_70%)]"
-        />
+          className="pointer-events-none absolute inset-0 overflow-hidden"
+        >
+          <div className="absolute inset-0 bg-[radial-gradient(60%_50%_at_50%_0%,--alpha(var(--color-primary)/8%),transparent_70%)]" />
+        </div>
         <div className="relative mx-auto max-w-4xl text-center">
           <Badge
             variant="outline"
@@ -377,7 +480,7 @@ export default function LandingPage() {
             </div>
           </div>
           {/* Stats strip */}
-          <div className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-4">
+          <div className="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
             {[
               ["240", "calls audited in 45 days"],
               ["97%", "model ↔ human agreement"],
